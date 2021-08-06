@@ -1,0 +1,136 @@
+library(MASS)
+install.packages("MAAS")
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+
+#1. Realice los siguientes pasos para explorar la base de datos fgl
+fgl
+ncol(fgl)
+nrow(fgl)
+head(fgl)
+plot(fgl)
+#Genere un gráfico de la concentración de óxido de magnesio (Mg) 
+#versus el índice de refracción (RI), con estas características
+
+plot(fgl$Mg,fgl$RI, xlab = "Mg concentration (ppm)", ylab = "Reflexive index" , 
+     pch = 20, col = "red", main = "Concentración MgO vs Indice de refracción")
+
+plot(fgl$Mg,fgl$RI, xlab = "Mg concentration (ppm)", ylab = "Reflexive index" , 
+     pch = 20, col = "red", main = "Concentración MgO vs Indice de refracción", las =1)
+
+boxplot(fgl$RI)
+
+library(ggplot2)
+
+
+#2. Análisis exploratorio de la base de datos de plátano
+#Leer el archivo eventos_de_platano.csv, especificar row.names.
+platano_1 <- read.csv("Datos/eventos_de_platano.csv", stringsAsFactors = T)
+platano_1
+head(platano_1)
+row.names(platano_1)
+summary(platano_1)
+#Ajustar el formato de la fecha, utilizando la función as.Date
+is(platano_1)
+platano_2 <- tibble(platano_1)
+is(platano_2)
+is(platano_1$FECHA_SIEMBRA)
+
+is(as.Date(platano_1$FECHA_SIEMBRA,"%m/%d/%Y"))
+
+platano_2 <- platano_2%>%mutate(FECHA_SIEMBRA=as.Date(FECHA_SIEMBRA,"%m/%d/%Y"))
+platano_2
+
+#Calcular el rendimiento (PN_ANIO/AREA_UM) y agregarlo directamente usando $.
+
+rendimiento <- platano_2$PN_ANIO/platano_2$AREA_UM
+rendimiento
+
+platano_2 <- cbind(plantano_2, rendimiento)
+
+head(platano_2)
+
+#Realizar análisis exploratorio de datos para cada una de las variables de la base de datos. 
+#(Medidas de tendencia central y dispersión; complementar con gráficos; hacer matriz de correlación para variables cuantitativas)
+
+#medidas de tendencia central
+
+mean(platano_2$NO_ARBOLES)
+mean(platano_2$rendimiento)
+mean(platano_2$AREA_UM)
+mean(platano_2$ALT_LOTE)
+mean(platano_2$EDAD)
+
+median(platano_2$NO_ARBOLES)
+median(platano_2$rendimiento)
+median(platano_2$AREA_UM)
+median(platano_2$ALT_LOTE)
+median(platano_2$EDAD)
+
+#medidas de dispercion
+#la correlacion solo para base de datos numerica
+cor_platano_2 <- cor(platano_2$NO_ARBOLES,platano_2$AREA_UM)
+cor_platano_5 <- cor(platano_2$NO_ARBOLES,platano_2$PN_ANIO)
+cor_platano_2
+
+#plot para graficar tipo correlacion
+plot(cor_platano_2)
+
+#Hacer un gráfico de puntos Edad vs Rendimiento, utilizando la función plot; indique 
+#la media de rendimiento dentro del gráfico, utilizando abline.
+
+plot(platano_2$EDAD,platano_2$AREA_UM, xlab = "Edad planta", ylab = "rendimiento" , 
+     pch = 20, col = "red", main = "Correlación edad/rendimiento")
+
+
+#ablime para poner la media
+abline(v = mean(platano_2$rendimiento, na.rm = T), lty = 2)
+
+#poner un texto de la media
+text(50,25, "MU = 42.13")
+
+
+abline(v = mean(platano_2$rendimiento, na.rm = T), lty = 2)
+
+?abline
+
+#Realizar un gráfico de ggplot de barras combinando las variables PATRON_USADO y 
+#dibujo de siembra como un color (revisar ejemplo de geom_bar).
+
+ggplot(platano_2, aes(x = PATRON_USADO, y = DIBUJO_SIEMBRA,)) + 
+  geom_bar()
+p <- c(platano_2$PATRON_USADO,platano_2$rendimiento)
+head(p)
+
+#ejemplo
+# geom_bar is designed to make it easy to create bar charts that show
+# counts (or sums of weights)
+g <- ggplot(platano_3, aes(class))
+# Number of cars in each class:
+g + geom_bar()
+
+?class
+
+
+pym <- c(platano_2$PATRON_USADO, platano_2$DIBUJO_SIEMBRA)
+ggplot(pym, aes(tipos)) + geom_bar()
+
+
+#Cruzar distancia de fecha vs Rendimiento (geom_smooth) pero segmentar por dibujo de siembra y PATRON_USADO.
+
+ggplot(platano_2, aes(x = PATRON_USADO, y = DIBUJO_SIEMBRA,)) + 
+  geom_point() + geom_smooth()
+
+#3. Genere los siguientes gráficos en ggplot, utilizando el conjunto de datos diamonds del 
+#paquete ggplot.
+
+?diamonds
+head(diamonds)
+#box plot cut vs depht
+boxplot(diamonds$depth~diamonds$cut)
+
+#table vs depth
+geom_point(diamonds$table~diamonds$depth)
+

@@ -1,0 +1,227 @@
+#Analis exploratorio de datos
+#Sandro Arias
+#26/07/2021
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+m1 <- c(21,30,29,27,29)
+m2 <- c(21,30,29,27,70)
+
+#comparar promedios m1 y m2
+#promedio
+mean(m1);mean(m2)
+#mediana
+median(m1);median(m2)
+#desviacion estandar
+sd(m1);sd(m2)
+
+range(m1)
+
+edad <- c(21,34,10,15,37)
+estatura <- c(1.8,1.7,1.5,1.4,1.7)
+
+#se usa correlacion para 
+#las medidas de variablidad (medir esas dos variabiidades) 
+#para unidades distintas sirne la Coeficiente de variacion
+
+sd(edad)/mean(edad)
+sd(estatura)/mean(estatura)
+
+#a mayor coeficiente de varacion mayor variabiliad
+#o de coeficiente de varacion es poca variabiliddad
+#cuando se evaluan la calidad de la medicion se usa la CV
+
+
+#graficos en R
+#ver resumenes
+airquality
+head(airquality)
+summary(airquality)
+dim(airquality)
+#para valores perdidos NAS
+#seleccionar filas completas, TREU, mantener los TRUE lo que tienen valores perdidos
+complete.cases(airquality)
+#extraer posiciones seusa corchete
+airq <- airquality[complete.cases(airquality),]
+summary(airq)
+#para ver el numero de observaciones
+dim(airq)
+
+#la correlacion solo para base de datos numerica
+cor.data <- cor(airq)
+?cor
+#diferentes tes de correlacion, pearson q evalua la dependencia linea y si tienen distribucion norla
+cor.data
+#cual es a correlacion mas alta entre variables
+
+#plot para graficar tipo correlacion
+plot(cor.data)
+plot(airq)
+
+#EVALUACION DE LA CORRELACION de variables cuantitativas
+
+#cuales tiene la correlcion mas alta
+#temperatura con ozono, pearson es 0.69, mide correlaciones lienales
+#son graficos de dispercion (XY) dos variabels numericas
+#pantalla adicional
+windows()
+
+#CORRELACION PARA 2 VARIABLES (TEMP YOZONO)
+plot(airq$Temp,airq$Ozone, xlab = "Temperatura (degrees F)", ylab = "Ozone (ppb)")
+?plot
+
+#configurar etiquetas
+plot(airq$Temp,airq$Ozone, xlab = "Temperatura (degrees F)", ylab = "Ozone (ppb)" , 
+     pch = 20, col = "red", main = "Temp vs Ozone")
+
+#titulo, main
+#forma de punto, pch
+#col, color
+
+#variables cuantitativas
+#analisis univariables
+#analisis bivariado de datos
+#analisis multivariado de datos
+
+#AGRUPAR PNG
+png("Resultados/hist_ozone.png", width = 520, height = 480)
+
+
+#HISTOGRAMA DE FRECUENCAS
+hist(airquality$Ozone, breaks = 13, ylim = c(0,30), col='orange', xlab="", main="")
+box()
+
+#ablime para poner la media
+abline(v = mean(airquality$Ozone, na.rm = T), lty = 2)
+
+#poner un texto de la media
+text(50,25, "MU = 42.13")
+
+#rug 
+rug(airquality$Ozone)
+
+#obsevar la distribucion de datos
+#numero de barras, breaks
+#entre 10 y 35 esta la mayor cantidad de datos
+
+#para saber si son iguales o estan acumulados en algunos valores
+#hay datos mayores hasta 25, ylim=
+
+
+#GRAFICO DE BOX PLOT, CAJAS Y VIGOTES
+boxplot(airquality$Solar.R)
+
+#compara 2 variables cuantitativas y cualitativa
+boxplot(airquality$Solar.R~airquality$Month)
+
+#cuando se tiene que llamar frecuente un vector se usa WITH 
+with(airquality, {boxplot(Solar.R~Month, col = "blue")})
+
+
+#GRAFICOS DE VARIABLES CUALITATIVAS
+#BARRAS
+tabMeses <- table(airquality$Month)
+barplot(tabMeses, ylim = c(0,35))
+box()
+
+#GRAFICO DE TORTA
+pie(tabMeses)
+
+#cuales la correlacion mas baja
+
+#cuales la correlacion negativa
+
+#GRAFICOS GGPLOT2
+library(ggplot2)
+
+#ver tipo de variables
+#no salga la primera columna
+str(trigo)
+
+#csv texto separado por comas
+#csv2 ??
+
+trigo <- read.csv("Datos/baseTrigo.csv", row.names = 1, stringsAsFactors = T)
+head(trigo, 10)
+head(trigo)
+
+summary(trigo)
+
+#GRAFICO DE BARRAS
+#y lab para poner titulos
+#hrend para guardar con el objeto
+
+brend <- ggplot(trigo, aes(x=Variedad, y=Rend)) + geom_boxplot() + 
+  facet_grid(.~ubicacion) + ylab("Rendimiento ton/ha") + theme_bw()
+
+
+#guardar graficos
+#guardar dentro de un objeto
+ggsave("Resultados/boxplotRend.png", brend,
+       height = 4, width = 6)
+
+#funcion apra sacar el rendimiento
+
+ggplot(trigo,aes(x=Rend))+geom_histogram(bins=15, colour="black", fill = "honeydew2") + 
+  ggtitle("Histograma de rendimiento") + theme_bw()
+
+#GRAFICO DE DISPERCION
+#como evoluciono el renDiMIento
+#geom_pont, para puntos
+
+#para evaluar tendencias geom_smooth()
+ggplot(trigo, aes(x=tiemp, y=Rend))+geom_point()
+#para tendencias geom_Smooth
+#facet_grid, para poner en varios grupos
+ggplot(trigo,aes(x=tiemp, y=Rend)) + 
+  geom_point()+geom_smooth()+
+  facet_grid(ubicacion~.)
+windows()
+                                                                        
+#graficos de burbujas
+iris
+head(iris)
+summary(iris)
+#aes para poner 2 variables
+p.iris <- ggplot(iris, aes(x=Sepal.Length,y=Petal.Length))+geom_point(aes(color=Species, size=Petal.Width))
+ggsave("Resultados/plotiris.png", p.iris,height = 4, width = 5)  
+#para guardar como objeto y ggsave con alto y ancho de gradico
+
+###################
+#GRAFICO DE RADAR
+
+# Library
+install.packages("fmsb")
+library(fmsb)
+
+# Create data: note in High school for Jonathan:
+data <- as.data.frame(matrix( sample( 2:20 , 10 , replace=T) , ncol=10))
+colnames(data) <- c("math" , "english" , "biology" , "music" , "R-coding", "data-viz" , "french" , "physic", "statistic", "sport" )
+
+# To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
+data <- rbind(rep(20,10) , rep(0,10) , data)
+
+# Check your data, it has to look like this!
+# head(data)
+
+# The default radar chart 
+radarchart(data)
+
+
+airquality
+#ozono
+ggplot(airquality, aes(x=Day, y=Temp))+geom_point()+
+  geom_line()+facet_grid(Month~.)
+
+ggplot(airquality, aes(x=Day, y=Temp))+geom_line(aes(colours=factor(Month)))
+
+
+ggplot(airquality,aes(x=Day,y=Ozone )) + geom_point() +
+  facet_grid(Month~.)
+
+ggplot(airquality,aes(x=Day,y=Ozone )) +
+  geom_line(aes(colour = factor(Month)))
+
+
+            
